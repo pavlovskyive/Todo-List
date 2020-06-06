@@ -9,21 +9,17 @@
 import Foundation
 import Combine
 
+
+// ViewModel: Link between model and view,
+// handling actions of user input about data
 class Todo: ObservableObject {
     
     // Properties
     // ----------
     
-    // Send updates forcing Views to update their contents
-    var didChange = PassthroughSubject<Todo, Never>()
-    
-    // When will be loaded send notification to every View subscribed to NetworkManager
-    // Connection to model
-    @Published var items = [TodoItem] () {
-        didSet {
-            didChange.send(self)
-        }
-    }
+    // Array of items of todo list,
+    // every time updated sends didChange to every view subscribed to it.
+    @Published var items = [TodoItem] ()
     
     // Methods
     // -------
@@ -31,6 +27,7 @@ class Todo: ObservableObject {
         loadItems()
     }
     
+    // Write data to local storage
     func saveItems() {
         let encoder = PropertyListEncoder()
         do {
@@ -41,9 +38,11 @@ class Todo: ObservableObject {
         }
     }
     
+    // Loading data from local storage
     func loadItems() {
         let path = dataFilePath()
         
+        // If no data this is skipped
         if let data = try? Data(contentsOf: path) {
             let decoder = PropertyListDecoder()
             do {
@@ -54,6 +53,8 @@ class Todo: ObservableObject {
         }
     }
     
+    // Struct is not a reverence value, meaning we can't pass items themselves.
+    // So we operating with them via ids.
     func getItemById(itemId: UUID) -> TodoItem? {
         return items.first(where: { $0.id == itemId }) ?? nil
     }
@@ -82,15 +83,20 @@ class Todo: ObservableObject {
         }
     }
     
+    // Get Document directory path on device
     func documentsDirectory() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
+    // Get path to plist data file
     func dataFilePath() -> URL {
         documentsDirectory().appendingPathComponent("Todo.plist")
     }
 }
 
+// All colors we implemented in assets.
+// Can be expanded: add color to assets and add here its name.
+// Everything will be handled automatically.
 var colors = [
     "blue",
     "green",

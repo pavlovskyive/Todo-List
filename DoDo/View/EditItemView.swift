@@ -9,13 +9,28 @@
 import SwiftUI
 
 struct EditItemView: View {
+    
+    // Connection to the ViewModel (Todo)
     var todo: Todo
     
+    // State variables
+    // ---------------
+    // current todo item
     @State var todoItem: TodoItem
+    
+    // Environment variables
+    // ---------------------
+    // variable for dissmission of modal sheet
     @Environment(\.presentationMode) var presentationMode
+    
+    
+    // UI content and layout
+    // ---------------------
     
     var body: some View {
         VStack(alignment: .leading) {
+            
+            // Header
             HStack {
                 Text("Edit task")
                     .font(.largeTitle)
@@ -33,7 +48,8 @@ struct EditItemView: View {
                 .disabled(todoItem.title.count == 0)
             }
             .padding([.top, .horizontal])
-                
+            
+            // Input
             TextField("Edit Task", text: self.$todoItem.title)
                 .font(.system(size: 20))
                 .padding(20)
@@ -45,6 +61,7 @@ struct EditItemView: View {
             
             Spacer()
             
+            // Footer
             HStack {
                 Spacer()
                 Text("Swipe down to cancel")
@@ -54,14 +71,6 @@ struct EditItemView: View {
             }
         }
         .padding(25)
-        .navigationBarItems(
-            trailing: Button(action: {
-                self.todo.editItem(item: self.todoItem)
-                self.presentationMode.wrappedValue.dismiss()
-            }) {
-                Text("Done")
-            }
-        )
     }
 }
 

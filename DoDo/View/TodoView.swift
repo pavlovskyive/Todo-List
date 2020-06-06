@@ -10,13 +10,13 @@ import SwiftUI
 
 struct TodoView: View {
     
-    // Property
-    // --------
-    
     // Connection to the ViewModel (Todo)
     @EnvironmentObject var todo: Todo
     
+    
     // UI content and layout
+    // ---------------------
+    
     var body: some View {
         NavigationView {
             ZStack {

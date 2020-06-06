@@ -9,9 +9,12 @@
 import SwiftUI
 
 struct ListView: View {
+    
+    // Connection to the ViewModel (Todo)
     @EnvironmentObject var todo: Todo
     
-    @State var itemForEdit = TodoItem(title: "")
+    // UI content and layout
+    // ---------------------
     
     var body: some View {
         List{

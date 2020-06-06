@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 
 // Model
+// Our data stores as such structures.
 struct TodoItem: Identifiable, Codable {
     let id = UUID()
     var title: String

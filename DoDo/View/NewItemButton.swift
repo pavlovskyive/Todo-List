@@ -9,10 +9,18 @@
 import SwiftUI
 
 struct NewItemButton: View {
+    // Connection to the ViewModel (Todo)
     @EnvironmentObject var todo: Todo
     
+    // State variables
+    // ---------------
+    // is new item modal presented?
     @State var sheetIsPresented = false
+    // is user currently pressing
     @GestureState var isDetectingLongGesture = false
+    
+    // UI content and layout
+    // ---------------------
     
     var body: some View {
         VStack {
@@ -40,6 +48,10 @@ struct NewItemButton: View {
         .padding(.bottom, 20)
         .padding(.trailing, 20)
             
+        // Gestures
+        // --------
+            
+        // Long Press
         .gesture(
             LongPressGesture(minimumDuration: 0.5)
                 .updating($isDetectingLongGesture) { currentstate, gestureState, transaction in
@@ -49,6 +61,8 @@ struct NewItemButton: View {
                     self.sheetIsPresented = true
                 }
         )
+        
+        // Tap
         .gesture(
             LongPressGesture(minimumDuration: 0)
                 .onEnded {_ in
@@ -56,6 +70,7 @@ struct NewItemButton: View {
             }
         )
             
+        // Modal (for new item view)
         .sheet(isPresented: self.$sheetIsPresented) {
             NewItemView(todo: self.todo)
         }

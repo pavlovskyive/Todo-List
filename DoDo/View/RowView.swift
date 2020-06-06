@@ -9,34 +9,52 @@
 import SwiftUI
 
 struct RowView: View {
+    
+    // Environment variables
+    // ---------------------
+    
+    // Connection to the ViewModel (Todo)
     @EnvironmentObject var todo: Todo
+    // Color scheme
     @Environment(\.colorScheme) var colorScheme
     
+    // State variables
+    // ---------------
+    // is item edit view presented?
     @State var sheetIsPresented = false
-    @State var viewState = CGSize.zero
+    // is item dragged enought to be deleted?
     @State var readyToBeDeleted = false
+    // is alert presented?
     @State var alertIsPresented = false
-    
-    // Long Press Gesture
-    @GestureState var isDetectingLongGesture = false
-    @State var completedLongPress = false
-    
+    // is current item deleted?
     @State var deleting = false
+    // drag gesture state
+    @State var viewState = CGSize.zero
+    // is long press finished?
+    @State var completedLongPress = false
+    // is user currently pressing
+    @GestureState var isDetectingLongGesture = false
     
+    // Other variables
+    // ---------------
+    
+    // how much user should drag item to delete it
     var valueToBeDeleted: CGFloat = -75
     
+    // unique id of item
     var itemId: UUID
     
+    // item from model (if found)
     var item: TodoItem? {
         return todo.getItemById(itemId: itemId)
     }
     
-    let shortPressGesture = LongPressGesture(minimumDuration: 0)
-    .onEnded { _ in
-        print("short press goes here")
-    }
+    
+    // UI content and layout
+    // ---------------------
     
     var body: some View {
+        // Layout
         HStack {
             Image(systemName: item?.isDone ?? false ? "circle.fill" : "circle")
                 .font(.system(size: 10, weight: .black))
@@ -47,15 +65,13 @@ struct RowView: View {
                 .foregroundColor(.primary)
             Spacer()
         }
-        // Visual
+            
+        // Visual properties
         .padding(20)
-            .background(self.readyToBeDeleted ? Color(.systemRed) : (colorScheme == .light ? Color(item?.colorName ?? "blue").opacity(0.2) : Color(.systemGray6)))
-        .background(Color(.systemGray6))
+        .background(self.readyToBeDeleted ? Color(.systemRed) : (colorScheme == .light ? Color(item?.colorName ?? "blue").opacity(0.2) : Color(.systemGray6)))
         .cornerRadius(20)
         
-        // Responces
-//        .overlay(Color(self.readyToBeDeleted ? .red : .clear).opacity(0.3).cornerRadius(20))
-            
+        // UI responces
         .offset(x: self.viewState.width < 0 ? self.viewState.width : 0)
         .scaleEffect(
             (self.isDetectingLongGesture || self.viewState.width < 0) ? 0.95 : (self.deleting ? 0 : 1))
@@ -63,12 +79,9 @@ struct RowView: View {
         .animation(.default)
             
         // Gestures
-                
-//        .onTapGesture(count: 1) {
-//            self.todo.toggleItem(itemId: self.itemId)
-//        }
-
-        
+        // --------
+            
+        // Long press
         .gesture(
             LongPressGesture(minimumDuration: 0.5)
                 .updating($isDetectingLongGesture) { currentstate, gestureState, transaction in
@@ -78,7 +91,8 @@ struct RowView: View {
                     self.sheetIsPresented = true
                 }
         )
-            
+        
+        // Drag
         .gesture(
             DragGesture()
                 .onChanged { value in
@@ -94,10 +108,14 @@ struct RowView: View {
                 }
         )
             
+        // Tap
         .gesture(
             LongPressGesture(minimumDuration: 0).onEnded {_ in self.todo.toggleItem(itemId: self.itemId)})
             
         // Modals
+        // ------
+            
+        // Deletion approval
         .alert(isPresented: self.$alertIsPresented) {
             Alert(
                 title: Text("Delete task"),
@@ -108,6 +126,8 @@ struct RowView: View {
                 }),
                 secondaryButton: .cancel())
         }
+        
+        // Edit item modal
         .sheet(isPresented: self.$sheetIsPresented, onDismiss: {self.sheetIsPresented = false }) {
             EditItemView(todo: self.todo, todoItem: self.item ?? TodoItem(title: "Error"))
         }

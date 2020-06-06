@@ -8,12 +8,22 @@
 
 import SwiftUI
 
+// View that put data in columns
 struct Collection<Content: View, Data: Hashable>: View {
+    
+    // data given (conforms to hashable protocol)
     var data: [Data]
+    
+    // construct view from closure
     let viewBuilder: (Data) -> Content
+    
+    // columns number
     let cols: Int
+    
+    // space between columns
     let spacing: CGFloat
 
+    // initialization
     init(data: [Data], cols: Int = 3, spacing: CGFloat = 5,_ viewBuilder: @escaping (Data) -> Content) {
         self.data = data
         self.cols = cols
@@ -21,6 +31,7 @@ struct Collection<Content: View, Data: Hashable>: View {
         self.viewBuilder = viewBuilder
     }
     
+    // cell view
     private func cell(colIndex: Int, rowIndex: Int) -> some View {
         let cellIndex = (rowIndex * cols) + colIndex
         return ZStack {
@@ -30,6 +41,7 @@ struct Collection<Content: View, Data: Hashable>: View {
         }
     }
     
+    // main layout
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -37,20 +49,29 @@ struct Collection<Content: View, Data: Hashable>: View {
             }
         }
     }
-
+    
+    // container
     private func setupView(geometry: GeometryProxy) -> some View {
+        
+        // remainder from division of number of elements on number of columns
         let rowRemainder = Double(data.count).remainder(dividingBy: Double(cols))
+        // if there are remaining item, add one more row
         let rowCount = data.count / cols + (rowRemainder == 0 ? 0 : 1)
+        // width and height of parent
         let frame = geometry.frame(in: .global)
+        // space between columnts
         let totalSpacing = Int(spacing) * (cols - 1)
+        // cell width
         let cellWidth = (frame.width - CGFloat(totalSpacing))/CGFloat(cols)
 
         return VStack(alignment: .leading, spacing: spacing) {
             ForEach(0...rowCount-1, id: \.self) { row in
+                // row
                 HStack(spacing: self.spacing) {
                     ForEach(0...self.cols-1, id: \.self) { col in
+                        // element
                         self.cell(colIndex: col, rowIndex: row)
-                        .frame(maxWidth: cellWidth)
+                            .frame(maxWidth: cellWidth)
                     }
                 }
             }
@@ -59,13 +80,22 @@ struct Collection<Content: View, Data: Hashable>: View {
 }
 
 struct ColorPickerView: View {
+    
+    // Binding variables
+    // (two-way connection with parent view)
+    // -----------------
+    // currenty choosen color
     @Binding var choosenColor: String
+    
+    // UI content and layout
+    // ---------------------
     
     var body: some View {
         VStack(alignment: .leading) {
             Text("Color Tag:")
                 .padding([.top, .leading])
             
+            // colors put in columns by 4
             Collection(data: colors, cols: 4, spacing: 0) { color in
                 ZStack {
                     Circle()
