@@ -87,6 +87,12 @@ struct ColorPickerView: View {
     // currenty choosen color
     @Binding var choosenColor: String
     
+    // Haptic feedback
+    func hapticSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+    
     // UI content and layout
     // ---------------------
     
@@ -108,6 +114,7 @@ struct ColorPickerView: View {
                         .font(.system(size: 35, weight: .black))
                         .onTapGesture {
                             self.choosenColor = color
+                            self.hapticSuccess()
                         }
                 }
             }

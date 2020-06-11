@@ -19,6 +19,12 @@ struct NewItemButton: View {
     // is user currently pressing
     @GestureState var isDetectingLongGesture = false
     
+    // Haptic feedback
+    func hapticSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+    
     // UI content and layout
     // ---------------------
     
@@ -59,6 +65,7 @@ struct NewItemButton: View {
                 }
                 .onEnded {_ in
                     self.sheetIsPresented = true
+                    self.hapticSuccess()
                 }
         )
         
@@ -66,7 +73,8 @@ struct NewItemButton: View {
         .gesture(
             LongPressGesture(minimumDuration: 0)
                 .onEnded {_ in
-                   self.sheetIsPresented = true
+                    self.sheetIsPresented = true
+                    self.hapticSuccess()
             }
         )
             

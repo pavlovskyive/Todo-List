@@ -35,6 +35,17 @@ struct RowView: View {
     // is user currently pressing
     @GestureState var isDetectingLongGesture = false
     
+    // Haptic feedback
+    func hapticSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+    
+    func hapticWarning() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.warning)
+    }
+    
     // Other variables
     // ---------------
     
@@ -89,6 +100,7 @@ struct RowView: View {
                 }
                 .onEnded { finished in
                     self.sheetIsPresented = true
+                    self.hapticSuccess()
                 }
         )
         
@@ -102,6 +114,7 @@ struct RowView: View {
                 .onEnded { _ in
                     if self.viewState.width < self.valueToBeDeleted {
                         self.alertIsPresented = true
+                        self.hapticWarning()
                     }
                     self.viewState = .zero
                     self.readyToBeDeleted = false
@@ -110,7 +123,11 @@ struct RowView: View {
             
         // Tap
         .gesture(
-            LongPressGesture(minimumDuration: 0).onEnded {_ in self.todo.toggleItem(itemId: self.itemId)})
+            LongPressGesture(minimumDuration: 0)
+                .onEnded {_ in
+                    self.todo.toggleItem(itemId: self.itemId)
+                    self.hapticSuccess()
+        })
             
         // Modals
         // ------
